@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>🎓 Pencarian Mahasiswa - Ukuran Data Dinamis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            padding: 25px 0;
+            color: white;
+        }
+        header h1 {
+            font-size: 2.3rem;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .control-group {
+            display: flex;
+            gap: 12px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        input, select, button {
+            padding: 12px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        input:focus, select:focus {
+            border-color: #4a6cf7;
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+        }
+        button {
+            background: #4a6cf7;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            border: none;
+        }
+        .btn-generate { background: #28a745; }
+        .btn-generate:hover { background: #218838; }
+        button:hover:not(.btn-generate) {
+            background: #3a5ae0;
+        }
+        .info-box {
+            background: #f0f7ff;
+            border-left: 4px solid #4a6cf7;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+        #result, #genResult {
+            padding: 20px;
+            border-radius: 12px;
+            min-height: 60px;
+            margin-top: 15px;
+        }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #e7f3ff; border: 1px solid #bee5eb; color: #0c5460; }
+        .perf { font-family: monospace; font-size: 0.95rem; }
+        .perf strong { color: #d32f2f; }
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            font-size: 0.9rem;
+            opacity: 0.85;
+        }
+        .size-presets {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .size-presets button {
+            padding: 6px 10px;
+            font-size: 13px;
+            background: #6c757d;
+        }
+        .size-presets button:hover { background: #5a6268; }
+        @media (max-width: 650px) {
+            .control-group { flex-direction: column; }
+            input, select, button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-search"></i> Sistem Pencarian Mahasiswa</h1>
+            <p>Uji Algoritma dengan Ukuran Data yang Bisa Diubah!</p>
+        </header>
+
+        <!-- Bagian Generate Data -->
+        <div class="card">
+            <h3><i class="fas fa-database"></i> Atur Ukuran Database</h3>
+            <div class="control-group">
+                <input type="number" id="sizeInput" value="1000" min="1" max="50000" placeholder="Jumlah mahasiswa (1-50000)" />
+                <button class="btn-generate" onclick="generateData()"><i class="fas fa-sync"></i> Generate Data</button>
+            </div>
+            <div class="size-presets">
+                <button onclick="setPreset(100)">100</button>
+                <button onclick="setPreset(1000)">1.000</button>
+                <button onclick="setPreset(5000)">5.000</button>
+                <button onclick="setPreset(10000)">10.000</button>
+                <button onclick="setPreset(50000)">50.000</button>
+            </div>
+            <div class="info-box">
+                <p>ℹ️ Data akan diurutkan otomatis untuk Binary Search. Maksimal 50.000 agar tetap cepat.</p>
+            </div>
+            <div id="genResult" class="info">Database saat ini: <strong>1.000</strong> mahasiswa</div>
+        </div>
+
+        <!-- Bagian Pencarian -->
+        <div class="card">
+            <h3><i class="fas fa-user-graduate"></i> Cari Mahasiswa</h3>
+            <div class="control-group">
+                <input type="number" id="npm" placeholder="Masukkan NPM (contoh: 20250001)" />
+                <select id="algo">
+                    <option value="linear">Iteratif (Linear Search)</option>
+                    <option value="binary">Rekursif (Binary Search)</option>
+                </select>
+                <button onclick="cari()"><i class="fas fa-search"></i> Cari</button>
+            </div>
+            <div id="result">
+                Masukkan NPM dan klik "Cari" untuk melihat hasil.
+            </div>
+        </div>
+
+        <footer>
+            <p>Studi Kasus Algoritma Pencarian | Bandingkan O(n) vs O(log n) dengan Ukuran Input yang Bervariasi</p>
+        </footer>
+    </div>
+
+    <script>
+        // Inisialisasi ukuran
+        let currentSize = 1000;
+        document.getElementById('genResult').innerHTML = `Database saat ini: <strong>${currentSize.toLocaleString()}</strong> mahasiswa`;
+
+        async function generateData() {
+            const size = parseInt(document.getElementById('sizeInput').value);
+            if (!size || size < 1 || size > 50000) {
+                alert("Masukkan angka antara 1 - 50.000");
+                return;
+            }
+
+            const genDiv = document.getElementById('genResult');
+            genDiv.className = 'info';
+            genDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Meng-generate ' + size.toLocaleString() + ' data...';
+
+            try {
+                const res = await fetch(`/api/generate?size=${size}`, { method: 'POST' });
+                const data = await res.json();
+
+                if (data.success) {
+                    currentSize = size;
+                    genDiv.className = 'success';
+                    const genTimeMs = (data.generate_time_microdetik / 1000).toFixed(2);
+                    genDiv.innerHTML = `
+                        ✅ Database berhasil di-generate!<br>
+                        <strong>${size.toLocaleString()}</strong> mahasiswa | Waktu: <strong>${data.generate_time_microdetik} µs</strong> (${genTimeMs} ms)
+                    `;
+                } else {
+                    throw new Error(data.error || "Gagal generate");
+                }
+            } catch (err) {
+                genDiv.className = 'error';
+                genDiv.innerHTML = "❌ " + (err.message || "Gagal terhubung ke server");
+            }
+        }
+
+        function setPreset(size) {
+            document.getElementById('sizeInput').value = size;
+            generateData();
+        }
+
+        async function cari() {
+            const npm = document.getElementById('npm').value;
+            const algo = document.getElementById('algo').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!npm || isNaN(npm)) {
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = "⚠️ Harap masukkan NPM yang valid (angka)!";
+                return;
+            }
+
+            resultDiv.className = '';
+            resultDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sedang mencari...';
+
+            try {
+                const url = `/api/cari?npm=${npm}&type=${algo}`;
+                const response = await fetch(url);
+
+                if (!response.ok) throw new Error("Server tidak merespons");
+                const data = await response.json();
+
+                if (data.found) {
+                    const waktuMs = (data.waktu_microdetik / 1000).toFixed(2);
+                    resultDiv.className = 'success';
+                    resultDiv.innerHTML = `
+                        <div><i class="fas fa-check-circle"></i> <strong>Ditemukan!</strong></div>
+                        <div><b>NPM:</b> ${data.npm}</div>
+                        <div><b>Nama:</b> ${data.nama}</div>
+                        <div><b>Jurusan:</b> ${data.jurusan}</div>
+                        <div class="perf">
+                            ⏱️ Algoritma: ${data.algo}<br>
+                            📊 Ukuran Data: ${data.ukuran_data.toLocaleString()}<br>
+                            🕒 Waktu: <strong>${data.waktu_microdetik} µs</strong> (${waktuMs} ms)
+                        </div>
+                    `;
+                } else {
+                    resultDiv.className = 'error';
+                    const waktuMs = (data.waktu_microdetik / 1000).toFixed(2);
+                    resultDiv.innerHTML = `
+                        <div><i class="fas fa-times-circle"></i> ${data.error}</div>
+                        <div class="perf">
+                            ⏱️ Algoritma: ${data.algo}<br>
+                            📊 Ukuran Data: ${data.ukuran_data.toLocaleString()}<br>
+                            🕒 Waktu: <strong>${data.waktu_microdetik} µs</strong> (${waktuMs} ms)
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = "❌ Gagal terhubung ke server. Pastikan server C++ sedang berjalan!";
+            }
+        }
+
+        document.getElementById('npm').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') cari();
+        });
+
+        // NPM default untuk demo
+        document.getElementById('npm').value = '2025500';
+    </script>
+</body>
+</html>
